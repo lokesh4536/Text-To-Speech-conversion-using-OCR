@@ -1,0 +1,79 @@
+#importing the required pacages
+import cv2
+import pytesseract
+import requests
+from gtts import gTTS
+from playsound import playsound
+
+#importing tesseract ocr exe
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe"
+
+# Read image and extract text
+image = cv2.imread("img2.jpg")
+
+
+#Read image from webcam
+# Initialize the video capture object
+cap = cv2.VideoCapture(0)  
+
+# Set the video capture properties
+cap.set(3, 640)
+cap.set(4, 480)
+
+#applying grayscale conversion to the input image
+
+grayscale = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+
+#extracting text from imge
+
+text = pytesseract.image_to_string(grayscale)
+print(text)
+
+# Display the image with the OCR output and bounding boxes for every character
+h1Img, w1Img, _ = image.shape
+box1 = pytesseract.image_to_boxes(image)
+for a in box1.splitlines():
+    a = a.split()
+    x, y = int(a[1]), int(a[2])
+    w, h = int(a[3]), int(a[4])
+    cv2.rectangle(image, (x, h1Img - y), (w, h1Img - h), (255, 0, 0), 1)
+    cv2.putText(image, a[0], (x,h1Img - y + 25), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 2)
+cv2.imshow('Translated Image', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# Displaying the image with OCR output and bounding boxes for each word
+data1 = pytesseract.image_to_data(image)
+for z, a in enumerate(data1.splitlines()):
+    if z != 0:
+        if len(a) == 12:
+            x, y = int(a[6]), int(a[7])
+            w, h = int(a[8]), int(a[9])
+            cv2.rectangle(image, (x,  y), (x + w, y + h), (255, 0, 0), 1)
+cv2.imshow('captue 1', image)
+
+# Translate text text to speech api
+url = "https://google-translate1.p.rapidapi.com/language/translate/v2"
+target_lang = input("Enter target language code (e.g. es for Spanish, fr for French): ")
+payload = f"q={text}&source=en&target={target_lang}"
+headers = {
+    "content-type": "application/x-www-form-urlencoded",
+    "X-RapidAPI-Key": "3f19b4c532mshca75a79d79d6407p15592ajsn6acf7c608a18",
+    "X-RapidAPI-Host": "google-translate1.p.rapidapi.com"
+}
+response = requests.post(url, data=payload, headers=headers)
+translated_text = response.json()["data"]["translations"][0]["translatedText"]
+print(translated_text)
+
+# Convert translated text to speech
+if translated_text != '':
+    speech = gTTS(text=translated_text, lang=target_lang, slow=False)
+    speech.save("test.mp3")
+    playsound("test.mp3")
+
+
+
+
+
+
