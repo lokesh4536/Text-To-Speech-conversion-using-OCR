@@ -1,18 +1,27 @@
 # Text-To-Sppech-conversion-using-OCR
 
 Description:
+
 This repository contains a Python script for Optical Character Recognition (OCR) using the Tesseract OCR engine and translation of the extracted text to a target language using the Google Translate API. 
 The script supports both image and webcam input.
 
+
 Getting Started
+
 Prerequisites
+
 Make sure you have the following installed:
 
 1.Python
+
 2.OpenCV (pip install opencv-python)
+
 3.Tesseract OCR (pip install pytesseract)
+
 4.Google Text-to-Speech (pip install gtts)
+
 5.Playsound (pip install playsound)
+
 6.Download and install the Tesseract OCR executable from Tesseract-OCR.
 
 Setup
